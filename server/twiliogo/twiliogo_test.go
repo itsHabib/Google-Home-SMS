@@ -8,18 +8,20 @@ import (
 	"testing"
 )
 
-func TestSMSHandlerWithMissingParameters(t *testing.T) {
+// TestTwilioHandlerWithMissingParameters ensures that the handler is
+// called with the correct parameters
+func TestTwilioHandlerWithMissingParameters(t *testing.T) {
 	tests := []twilioSmsRequest{
-		{From: "18186247532"},
-		{To: "18186247532"},
+		{From: "18888888888"},
+		{To: "18888888888"},
 		{Body: "Missing params"},
-		{From: "18186247532", Body: "I'm missing a to param"},
-		{To: "18186247532", Body: "I'm missing a from param"},
-		{To: "18186247532", From: "18186247532"},
+		{From: "18888888888", Body: "I'm missing a to param"},
+		{To: "18888888888", Body: "I'm missing a from param"},
+		{To: "18888888888", From: "18888888888"},
 	}
 	handler := TwilioHandler{}
 
-	for tt := range tests {
+	for _, tt := range tests {
 		data, err := json.Marshal(tt)
 		if err != nil {
 			t.Fatal(err)
@@ -32,6 +34,34 @@ func TestSMSHandlerWithMissingParameters(t *testing.T) {
 		if rr.Code != http.StatusBadRequest {
 			t.Errorf("Bad request, missing parameters, "+
 				"expected code=%v, got=%v", http.StatusBadRequest, rr.Code)
+		}
+	}
+}
+
+// TestTwilioHandlerWithWrongMethods ensures that the handler is
+// called with the correct method, POST
+func TestTwilioHandlerWithWrongMethods(t *testing.T) {
+	requestData := twilioSmsRequest{
+		From: "18888888888",
+		To:   "18888888888",
+		Body: "Wrong method testing request",
+	}
+	testMethods := []string{"GET", "OPTIONS", "HEAD", "DELETE", "CONNECT", "PUT"}
+	data, err := json.Marshal(requestData)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	handler := TwilioHandler{}
+	reader := bytes.NewReader(data)
+
+	for _, tt := range testMethods {
+		req := httptest.NewRequest(tt, "/api/google-home-sms/", reader)
+		rr := httptest.NewRecorder()
+		handler.ServeHTTP(rr, req)
+		if rr.Code != http.StatusMethodNotAllowed {
+			t.Errorf("Method not allowed, expected code=%v, got=%v",
+				http.StatusMethodNotAllowed, rr.Code)
 		}
 	}
 }

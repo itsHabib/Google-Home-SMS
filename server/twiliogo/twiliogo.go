@@ -22,7 +22,13 @@ type twilioSmsRequest struct {
 	Body string
 }
 
-func (tw *TwilioHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+// Handles the data sent in a POST request to /api/google-home-sms/
+func (twh *TwilioHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
 	decoder := json.NewDecoder(r.Body)
 	defer r.Body.Close()
 
@@ -30,9 +36,10 @@ func (tw *TwilioHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	err := decoder.Decode(requestData)
 	if err != nil {
 		http.Error(w, "Bad Request", http.StatusBadRequest)
+		return
 	}
-
 	if requestData.Body == "" || requestData.From == "" || requestData.To == "" {
 		http.Error(w, "Bad Request, missing parameters", http.StatusBadRequest)
+		return
 	}
 }
