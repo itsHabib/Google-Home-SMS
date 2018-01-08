@@ -65,3 +65,21 @@ func TestTwilioHandlerWithWrongMethods(t *testing.T) {
 		}
 	}
 }
+
+func TestSendSMSWithNoAuth(t *testing.T) {
+	tests := []TwilioCilent{
+		{AccountSID: ""},
+		{AuthToken: ""},
+	}
+	smsRequest := twilioSmsRequest{
+		From: "18888888888",
+		To:   "18888888888",
+		Body: "body",
+	}
+	for _, tt := range tests {
+		err := tt.SendSMS(smsRequest)
+		if err == nil {
+			t.Errorf("No auth provided, expected err=%v, got=%v", "No auth provided", err)
+		}
+	}
+}

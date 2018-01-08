@@ -2,7 +2,11 @@ package twiliogo
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
+	"net/url"
+	"os"
+	"strings"
 )
 
 const (
@@ -42,4 +46,48 @@ func (twh *TwilioHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Bad Request, missing parameters", http.StatusBadRequest)
 		return
 	}
+	twClient := &TwilioCilent{
+		AccountSID: os.Getenv("TWILIO_SID"),
+		AuthToken:  os.Getenv("TWILIO_TOKEN"),
+	}
+	err = twClient.SendSMS(*requestData)
+	if err != nil {
+		http.Error(w, "Error sending SMS", http.StatusInternalServerError)
+	}
+}
+
+// SendSMS is responsible for sending the POST request to twilio to actually
+// send the sms
+func (twc *TwilioCilent) SendSMS(smsData twilioSmsRequest) error {
+	if twc.AuthToken == "" || twc.AccountSID == "" {
+		return errors.New("No auth provided")
+	}
+
+	accountSID := os.Getenv("TWILIO_SID")
+	authToken := os.Getenv("TWILIO_TOKEN")
+	urlStr := TWILIO_URL + "/" + accountSID + "/Messages.json"
+
+	data := url.Values{}
+	data.Set("To", smsData.To)
+	data.Set("From", smsData.From)
+	data.Set("Body", smsData.Body)
+	dataReader := *strings.NewReader(data.Encode())
+
+	client := &http.Client{}
+	req, err := http.NewRequest("POST", urlStr, &dataReader)
+	if err != nil {
+		return err
+	}
+	req.SetBasicAuth(accountSID, authToken)
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
+		err = nil
+	}
+	return err
 }
