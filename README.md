@@ -26,7 +26,7 @@ to the server containing a body of:
 }
 ```
 
-### Notes
+### Notes:
 It is completely possible to just have the Google Action be responsible for gathering the
 data and sending the SMS. I decided not to do this several reasons. I really enjoy writing
 code in Go and have never used Twilio with it before. I also have never used Google's Compute
@@ -35,6 +35,6 @@ go package for others to use.
 
 
 ### Future Plans As of 1 / 08 / 2018
-- [] Set up database that holds contacts
-- [] Create Google Action
-- [] Refactor Twilio code into its own go package 
+- [ ] Set up database that holds contacts
+- [ ] Create Google Action
+- [ ] Refactor Twilio code into its own go package 
