@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/itsHabib/google-home-sms/server/twiliogo"
+	"github.com/itsHabib/twiliogo"
 )
 
 func main() {

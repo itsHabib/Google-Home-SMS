@@ -39,7 +39,6 @@ func (twh *TwilioHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	decoder := json.NewDecoder(r.Body)
 	defer r.Body.Close()
-
 	requestData := new(twilioSmsRequest)
 	err := decoder.Decode(requestData)
 	if err != nil {
