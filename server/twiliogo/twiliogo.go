@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	"time"
 )
 
 const (
@@ -32,7 +33,10 @@ func (twh *TwilioHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
-
+	if r.Header.Get("Content-Type") != "application/json" {
+		http.Error(w, "Content type must be application/json", http.StatusBadRequest)
+		return
+	}
 	decoder := json.NewDecoder(r.Body)
 	defer r.Body.Close()
 
@@ -54,6 +58,16 @@ func (twh *TwilioHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "Error sending SMS", http.StatusInternalServerError)
 	}
+	w.Header().Set("Content-Type", "application/json")
+	jsonResponse := struct {
+		Sent      bool      `json:"sent"`
+		TimeStamp time.Time `json:"time_stamp"`
+	}{
+		Sent:      true,
+		TimeStamp: time.Now(),
+	}
+	json.NewEncoder(w).Encode(jsonResponse)
+
 }
 
 // SendSMS is responsible for sending the POST request to twilio to actually
