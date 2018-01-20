@@ -29,12 +29,15 @@ type twilioSmsRequest struct {
 
 // Handles the data sent in a POST request to /api/google-home-sms/
 func (twh *TwilioHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	if r.Method != "POST" {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		http.Error(w, "{sent: false, time: 0, bad_request: Method not allowed}",
+			http.StatusMethodNotAllowed)
 		return
 	}
 	if r.Header.Get("Content-Type") != "application/json" {
-		http.Error(w, "Content type must be application/json", http.StatusBadRequest)
+		http.Error(w, "{sent: false, time: 0, bad_request: Content type must be application/json}",
+			http.StatusBadRequest)
 		return
 	}
 	decoder := json.NewDecoder(r.Body)
@@ -42,11 +45,11 @@ func (twh *TwilioHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	requestData := new(twilioSmsRequest)
 	err := decoder.Decode(requestData)
 	if err != nil {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
+		http.Error(w, "{sent: false, time: 0, bad_request: bad request}", http.StatusBadRequest)
 		return
 	}
 	if requestData.Body == "" || requestData.From == "" || requestData.To == "" {
-		http.Error(w, "Bad Request, missing parameters", http.StatusBadRequest)
+		http.Error(w, "{sent: false, time: 0, bad_request: missing parameters}", http.StatusBadRequest)
 		return
 	}
 	twClient := &TwilioCilent{
@@ -55,9 +58,8 @@ func (twh *TwilioHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	err = twClient.SendSMS(*requestData)
 	if err != nil {
-		http.Error(w, "Error sending SMS", http.StatusInternalServerError)
+		http.Error(w, "{sent:false, time_stamp:0}", http.StatusInternalServerError)
 	}
-	w.Header().Set("Content-Type", "application/json")
 	jsonResponse := struct {
 		Sent      bool      `json:"sent"`
 		TimeStamp time.Time `json:"time_stamp"`
