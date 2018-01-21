@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	http.Handle("/api/google-home-sms/", &twiliogo.TwilioHandler{})
+	http.Handle("/api/google-home-sms", &twiliogo.TwilioHandler{})
 	log.Print("Server starting on port 8081\n")
 	err := http.ListenAndServe(":8081", nil)
 	if err != nil {
