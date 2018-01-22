@@ -8,15 +8,14 @@ should be sent to and the message.
 
 ## Current Progress
 As of 1 / 08 / 2018 the server for sending texts is complete. 
-The plan is to complete the Google Action by 1 / 14/ 2018. 
+The plan is to complete the Google Action by 1 / 22 / 2018. 
 
 ## Usage
 In order to use the code I've written so far you need to first set up a
 Twilio account and get an account SID and auth token. Once you obtain those
-you can clone / fork the repository and just run the main go file, providing your creds. 
-I also created a docker file so that the program can be run in a container. This is how 
-I have the server running, in a container on a Google Compute Engine instance.
-In order for a text to be sent using the handler a POST request needs to be sent
+you can clone / fork the repository and just run the main go file, providing your creds for Twilio. 
+I also created a docker file so that the program can be run in a container and a start up script 
+for a Google Compute Engine instance. This is how  I have the server running, in a container on a Google Compute Engine instance. In order for a text to be sent using the handler a POST request needs to be sent
 to the server containing a body of:
 ```json
 {
