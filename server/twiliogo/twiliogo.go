@@ -14,11 +14,13 @@ const (
 	TWILIO_URL = "https://api.twilio.com/2010-04-01/Accounts"
 )
 
-type TwilioCilent struct {
+// TwilioClient represents a client for the Twilio API
+type TwilioClient struct {
 	AccountSID string
 	AuthToken  string
 }
 
+// TwilioHandler is the handler struct responsible for serving http requests
 type TwilioHandler struct{}
 
 type twilioSmsRequest struct {
@@ -52,7 +54,7 @@ func (twh *TwilioHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "{sent: false, time: 0, bad_request: missing parameters}", http.StatusBadRequest)
 		return
 	}
-	twClient := &TwilioCilent{
+	twClient := &TwilioClient{
 		AccountSID: os.Getenv("TWILIO_SID"),
 		AuthToken:  os.Getenv("TWILIO_TOKEN"),
 	}
@@ -73,7 +75,7 @@ func (twh *TwilioHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 // SendSMS is responsible for sending the POST request to twilio to actually
 // send the sms
-func (twc *TwilioCilent) SendSMS(smsData twilioSmsRequest) error {
+func (twc *TwilioClient) SendSMS(smsData twilioSmsRequest) error {
 	if twc.AuthToken == "" || twc.AccountSID == "" {
 		return errors.New("No auth provided")
 	}
