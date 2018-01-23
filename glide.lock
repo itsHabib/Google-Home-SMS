@@ -1,0 +1,6 @@
+hash: 19475c1e8eca0471ae1debe2c67f04a60e97711446d8866941bf283ed9d3a62c
+updated: 2018-01-22T19:03:31.1057115-08:00
+imports:
+- name: github.com/itsHabib/twiliogo
+  version: 7989ac2cb274cedd109b8534511878bf6ffc1c71
+testImports: []
