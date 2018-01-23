@@ -1,3 +1,0 @@
-package: github.com/itsHabib/google-home-sms
-import:
-- package: github.com/itsHabib/twiliogo
